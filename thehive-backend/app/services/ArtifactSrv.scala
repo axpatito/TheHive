@@ -116,6 +116,11 @@ class ArtifactSrv @Inject() (
     findSrv[ArtifactModel, Artifact](artifactModel, queryDef, range, sortBy)
   }
 
+  def findInCase(caze: Case): Future[Seq[JsObject]] = {
+    import org.elastic4play.services.QueryDSL._
+    find(withParent(caze), Some("all"), Nil)._1.map(_.toJson).runWith(Sink.seq[JsObject])
+  }
+
   def stats(queryDef: QueryDef, aggs: Seq[Agg]): Future[JsObject] = findSrv(artifactModel, queryDef, aggs: _*)
 
   def isSeen(artifact: Artifact): Future[Long] = {

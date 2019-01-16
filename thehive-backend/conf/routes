@@ -23,6 +23,7 @@ DELETE   /api/case/:caseId                        controllers.CaseCtrl.delete(ca
 DELETE   /api/case/:caseId/force                  controllers.CaseCtrl.realDelete(caseId)
 GET      /api/case/:caseId/links                  controllers.CaseCtrl.linkedCases(caseId)
 POST     /api/case/:caseId1/_merge/:caseId2       controllers.CaseCtrl.merge(caseId1, caseId2)
+GET      /api/case/export/:caseId                 controllers.CaseCtrl.export(caseId)
 
 POST     /api/case/template/_search               controllers.CaseTemplateCtrl.find()
 POST     /api/case/template                       controllers.CaseTemplateCtrl.create()

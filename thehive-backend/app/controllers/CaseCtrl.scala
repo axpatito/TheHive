@@ -4,17 +4,14 @@ import javax.inject.{ Inject, Singleton }
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
-
 import play.api.Logger
 import play.api.http.Status
 import play.api.libs.json.{ JsArray, JsObject, Json }
 import play.api.mvc._
-
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
 import models.{ CaseStatus, Roles }
-import services.{ CaseMergeSrv, CaseSrv, CaseTemplateSrv, TaskSrv }
-
+import services.{ ArtifactSrv, CaseMergeSrv, CaseSrv, CaseTemplateSrv, TaskSrv }
 import org.elastic4play.controllers.{ Authenticated, Fields, FieldsBodyParser, Renderer }
 import org.elastic4play.models.JsonFormat.baseModelEntityWrites
 import org.elastic4play.services.JsonFormat.{ aggReads, queryReads }
@@ -28,6 +25,7 @@ class CaseCtrl @Inject() (
     caseMergeSrv: CaseMergeSrv,
     taskSrv: TaskSrv,
     auxSrv: AuxSrv,
+    artifactSrv: ArtifactSrv,
     authenticated: Authenticated,
     renderer: Renderer,
     components: ControllerComponents,
@@ -141,5 +139,10 @@ class CaseCtrl @Inject() (
     caseMergeSrv.merge(caseId1, caseId2).map { caze ⇒
       renderer.toOutput(OK, caze)
     }
+  }
+
+  @Timed
+  def export(caseId: String): Action[AnyContent] = authenticated(Roles.read).async { implicit request ⇒
+    caseSrv.exportCase(caseId).map(renderer.toOutput(OK, _))
   }
 }

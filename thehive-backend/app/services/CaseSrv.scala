@@ -4,16 +4,13 @@ import javax.inject.{ Inject, Provider, Singleton }
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
-
 import play.api.Logger
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json._
-
 import akka.NotUsed
 import akka.stream.Materializer
 import akka.stream.scaladsl.{ Sink, Source }
 import models._
-
 import org.elastic4play.controllers.Fields
 import org.elastic4play.database.ModifyConfig
 import org.elastic4play.services._
@@ -126,6 +123,13 @@ class CaseSrv @Inject() (
   }
 
   def stats(queryDef: QueryDef, aggs: Seq[Agg]): Future[JsObject] = findSrv(caseModel, queryDef, aggs: _*)
+
+  def exportCase(caseId: String): Future[JsObject] = {
+    for {
+      caze ← get(caseId)
+      artifacts ← artifactSrv.findInCase(caze)
+    } yield Json.obj(("case", caze.toJson), ("observables", artifacts))
+  }
 
   def getStats(id: String): Future[JsObject] = {
     import org.elastic4play.services.QueryDSL._
