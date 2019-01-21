@@ -128,7 +128,8 @@ class CaseSrv @Inject() (
     for {
       caze ← get(caseId)
       artifacts ← artifactSrv.findInCase(caze)
-    } yield Json.obj(("case", caze.toJson), ("observables", artifacts))
+      tasks ← taskSrv.findInCase(caze)
+    } yield Json.obj(("case", caze.toJson), ("observables", artifacts), ("tasks", tasks))
   }
 
   def getStats(id: String): Future[JsObject] = {
